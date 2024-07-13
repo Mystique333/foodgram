@@ -1,0 +1,3 @@
+MIN_VALUE = 10
+
+MAX_VALUE = 1500
