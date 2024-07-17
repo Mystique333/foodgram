@@ -32,3 +32,4 @@ urllib3==2.1.0
 python-decouple==3.8
 drf-extra-fields==3.7.0
 flake8==7.0.0
+pyshorteners
