@@ -8,6 +8,34 @@ from backend.constants import MIN_VALUE, MAX_VALUE
 User = get_user_model()
 
 
+class Tag(models.Model):
+    """Модель тегов."""
+    name = models.CharField(
+        'Название',
+        max_length=25,
+        unique=True
+    )
+    color = models.CharField(
+        'Цвет',
+        max_length=25,
+        unique=True,
+        db_index=False
+    )
+    slug = models.SlugField(
+        'Слаг',
+        max_length=25,
+        unique=True
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+
+    def __str__(self):
+        return f'{self.name} ({self.color})'
+
+
 class Ingredient(models.Model):
     """Модель ингредиентов."""
     name = models.CharField(
@@ -125,34 +153,6 @@ class RecipeIngredients(models.Model):
 
     def __str__(self):
         return f'{self.ingredient} в {self.recipe}'
-
-
-class Tag(models.Model):
-    """Модель тегов."""
-    name = models.CharField(
-        'Название',
-        max_length=25,
-        unique=True
-    )
-    color = models.CharField(
-        'Цвет',
-        max_length=25,
-        unique=True,
-        db_index=False
-    )
-    slug = models.SlugField(
-        'Слаг',
-        max_length=25,
-        unique=True
-    )
-
-    class Meta:
-        ordering = ['-id']
-        verbose_name = 'Тег'
-        verbose_name_plural = 'Теги'
-
-    def __str__(self):
-        return f'{self.name} ({self.color})'
 
 
 class Subscribe(models.Model):
