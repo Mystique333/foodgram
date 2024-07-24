@@ -83,6 +83,95 @@ class UsersViewSet(ModelViewSet):
 
         return Response({'message': 'Пароль успешно изменен.'}, status=status.HTTP_204_NO_CONTENT)
 
+    # @action(detail=False, methods=['get'], url_path='subscriptions', permission_classes=[IsAuthenticated])
+    # def subscriptions(self, request):
+    #     user = request.user
+    #     subscriptions = Subscribe.objects.filter(user=user)
+    #     page = self.paginate_queryset(subscriptions)
+    #     if page is not None:
+    #         serializer = SubscriptionSerializer(page, many=True, context={'request': request})
+    #         return self.get_paginated_response(serializer.data)
+
+    #     serializer = SubscriptionSerializer(subscriptions, many=True, context={'request': request})
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
+    # def subscribe(self, request, pk=None):
+    #     user = request.user
+    #     author = get_object_or_404(User, pk=pk)
+
+    #     if request.method == 'POST':
+    #         recipes_limit = request.query_params.get('recipes_limit', 5)
+
+    #         if user == author:
+    #             return Response({'detail': 'Вы не можете подписаться на себя.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    #         if Subscribe.objects.filter(user=user, author=author).exists():
+    #             serializer = SubscriptionSerializer(author, context={'request': request, 'recipes_limit': int(recipes_limit)})
+    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #         subscription = Subscribe(user=user, author=author)
+    #         subscription.save()
+
+    #         serializer = SubscriptionSerializer(author, context={'request': request, 'recipes_limit': int(recipes_limit)})
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #     elif request.method == 'DELETE':
+    #         subscription = Subscribe.objects.filter(user=user, author=author).first()
+
+    #         if subscription:
+    #             subscription.delete()
+    #             return Response(status=status.HTTP_204_NO_CONTENT)
+    #         else:
+    #             return Response({'detail': 'Вы не подписаны на этого пользователя.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    #     return Response({'detail': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    # @action(detail=False, methods=['get'], url_path='subscriptions', permission_classes=[IsAuthenticated])
+    # def subscriptions(self, request):
+    #     user = request.user
+    #     subscriptions = Subscribe.objects.filter(user=user)
+    #     page = self.paginate_queryset(subscriptions)
+    #     if page is not None:
+    #         serializer = SubscriptionSerializer(page, many=True, context={'request': request})
+    #         return self.get_paginated_response(serializer.data)
+
+    #     serializer = SubscriptionSerializer(subscriptions, many=True, context={'request': request})
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+
+    # @action(detail=True, methods=['post', 'delete'], permission_classes=[IsAuthenticated])
+    # def subscribe(self, request, pk=None):
+    #     user = request.user
+    #     author = get_object_or_404(User, pk=pk)
+
+    #     if request.method == 'POST':
+    #         recipes_limit = request.query_params.get('recipes_limit', 5)
+
+    #         if user == author:
+    #             return Response({'detail': 'Вы не можете подписаться на себя.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    #         existing_subscription = Subscribe.objects.filter(user=user, author=author).first()
+    #         if existing_subscription:
+    #             # Если подписка уже существует, возвращаем статус 201 с текущими данными
+    #             serializer = SubscriptionSerializer(existing_subscription, context={'request': request, 'recipes_limit': int(recipes_limit)})
+    #             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #         subscription = Subscribe(user=user, author=author)
+    #         subscription.save()
+
+    #         serializer = SubscriptionSerializer(subscription, context={'request': request, 'recipes_limit': int(recipes_limit)})
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    #     elif request.method == 'DELETE':
+    #         subscription = Subscribe.objects.filter(user=user, author=author).first()
+
+    #         if subscription:
+    #             subscription.delete()
+    #             return Response(status=status.HTTP_204_NO_CONTENT)
+    #         else:
+    #             return Response({'detail': 'Вы не подписаны на этого пользователя.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    #     return Response({'detail': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     @action(detail=False, methods=['get'], url_path='subscriptions', permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
@@ -106,14 +195,16 @@ class UsersViewSet(ModelViewSet):
             if user == author:
                 return Response({'detail': 'Вы не можете подписаться на себя.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            if Subscribe.objects.filter(user=user, author=author).exists():
-                serializer = SubscriptionSerializer(author, context={'request': request, 'recipes_limit': int(recipes_limit)})
+            existing_subscription = Subscribe.objects.filter(user=user, author=author).first()
+            if existing_subscription:
+                # Если подписка уже существует, возвращаем статус 201 с текущими данными
+                serializer = SubscriptionSerializer(existing_subscription, context={'request': request, 'recipes_limit': int(recipes_limit)})
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             subscription = Subscribe(user=user, author=author)
             subscription.save()
 
-            serializer = SubscriptionSerializer(author, context={'request': request, 'recipes_limit': int(recipes_limit)})
+            serializer = SubscriptionSerializer(subscription, context={'request': request, 'recipes_limit': int(recipes_limit)})
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         elif request.method == 'DELETE':
@@ -126,6 +217,7 @@ class UsersViewSet(ModelViewSet):
                 return Response({'detail': 'Вы не подписаны на этого пользователя.'}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({'detail': 'Метод не поддерживается'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 
     @action(
         detail=False,
@@ -268,14 +360,55 @@ class RecipeViewSet(ModelViewSet):
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    # def download_shopping_cart(self, request):
+    #     user = request.user
+    #     if not user.shopping_cart.exists():
+    #         return Response(status=HTTP_400_BAD_REQUEST)
+
+    #     def get_user_shopping_cart_ingredients():
+    #         return RecipeIngredients.objects.filter(
+    #             recipe__shopping_cart__user=request.user
+    #         ).values(
+    #             'ingredient__name',
+    #             'ingredient__measurement_unit'
+    #         )
+
+    #     def aggregate_ingredient_amount(ingredients):
+    #         return ingredients.annotate(amount=Sum('amount'))
+
+    #     def format_ingredient_line(ingredient):
+    #         return (
+    #             f'- {ingredient["ingredient__name"]}'
+    #             f'({ingredient["ingredient__measurement_unit"]})'
+    #             f'- {ingredient["amount"]}'
+    #         )
+
+    #     user_ingredients = get_user_shopping_cart_ingredients()
+    #     agg_ing = aggregate_ingredient_amount(user_ingredients)
+    #     name = f'shopping_list_for_{user.get_username}.txt'
+    #     shopping_list = f'Что купить для {user.get_username()}:\n'
+    #     shopping_list += '\n'.join(
+    #         [format_ingredient_line(ingredient) for ingredient in agg_ing]
+    #     )
+
+    #     response = HttpResponse(shopping_list, content_type='text/plain')
+    #     response['Content-Disposition'] = f'attachment; filename={name}'
+
+    #     return response
+    @action(detail=False, methods=['get'], url_path='download_shopping_cart', permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         user = request.user
+
+        # Проверьте, есть ли у пользователя что скачать
         if not user.shopping_cart.exists():
-            return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'Корзина покупок пуста.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         def get_user_shopping_cart_ingredients():
             return RecipeIngredients.objects.filter(
-                recipe__shopping_cart__user=request.user
+                recipe__shopping_cart__user=user
             ).values(
                 'ingredient__name',
                 'ingredient__measurement_unit'
@@ -287,23 +420,22 @@ class RecipeViewSet(ModelViewSet):
         def format_ingredient_line(ingredient):
             return (
                 f'- {ingredient["ingredient__name"]}'
-                f'({ingredient["ingredient__measurement_unit"]})'
-                f'- {ingredient["amount"]}'
+                f' ({ingredient["ingredient__measurement_unit"]})'
+                f' - {ingredient["amount"]}'
             )
 
         user_ingredients = get_user_shopping_cart_ingredients()
         agg_ing = aggregate_ingredient_amount(user_ingredients)
-        name = f'shopping_list_for_{user.get_username}.txt'
+        name = f'shopping_list_for_{user.get_username()}.txt'
         shopping_list = f'Что купить для {user.get_username()}:\n'
         shopping_list += '\n'.join(
             [format_ingredient_line(ingredient) for ingredient in agg_ing]
         )
 
         response = HttpResponse(shopping_list, content_type='text/plain')
-        response['Content-Disposition'] = f'attachment; filename={name}'
+        response['Content-Disposition'] = f'attachment; filename="{name}"'
 
         return response
-
 
 class IngredientViewSet(ReadOnlyModelViewSet):
     """Вьюсет для ингредиентов."""
