@@ -1,0 +1,64 @@
+version: '3'
+
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+
+  db:
+    image: postgres:13
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+
+  # тестовая база с дампом 
+  # db:
+  #   image: postgres:13
+  #   env_file: .env
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data/
+  #     - ./db_backup.sql:/docker-entrypoint-initdb.d/dump.sql
+
+  backend:
+    image: mystique333/foodgram_backend:latest
+    env_file: .env
+    volumes:
+      - static:/backend_static
+      - media:/app/media/
+    depends_on:
+      - db
+
+  # тестовый бекенд
+  # backend:
+  #   build:
+  #     context: ../backend
+  #     dockerfile: Dockerfile
+  #   env_file: .env
+  #   volumes:
+  #     - static:/backend_static
+  #     - media:/app/media/
+  #   depends_on:
+  #     - db
+
+  frontend:
+    image: mystique333/foodgram_frontend:latest
+    env_file: .env
+    command: cp -r /app/build/. /static/
+    volumes:
+      - static:/static
+    depends_on:
+      - backend
+
+  nginx:
+    image: mystique333/foodgram_gateway:latest
+    ports:
+      - "9000:80"
+    volumes:
+      - static:/static
+      - media:/media
+      - ./docs/:/usr/share/nginx/html/api/docs
+    depends_on:
+      - backend
+      - frontend
