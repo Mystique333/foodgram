@@ -30,7 +30,8 @@ class RecipeFilter(FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ('tags', 'author', 'is_in_purchase', 'is_favorited', 'is_in_shopping_cart')
+        fields = ('tags', 'author', 'is_in_purchase',
+                  'is_favorited', 'is_in_shopping_cart')
 
     def is_user_anonymous(self):
         return self.request.user.is_anonymous
