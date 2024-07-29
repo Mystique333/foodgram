@@ -7,31 +7,38 @@ volumes:
 
 services:
 
+  # db:
+  #   image: postgres:13
+  #   env_file: .env
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data/
+
   db:
     image: postgres:13
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data/
-
-  backend:
-    image: mystique333/foodgram_backend:latest
-    env_file: .env
-    volumes:
-      - static:/backend_static
-      - media:/app/media/
-    depends_on:
-      - db
+      - ./db_backup.sql:/docker-entrypoint-initdb.d/dump.sql
 
   # backend:
-  #   build:
-  #     context: ../backend
-  #     dockerfile: Dockerfile
+  #   image: mystique333/foodgram_backend:latest
   #   env_file: .env
   #   volumes:
   #     - static:/backend_static
   #     - media:/app/media/
   #   depends_on:
   #     - db
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - static:/backend_static
+      - media:/app/media/
+    depends_on:
+      - db
 
   frontend:
     image: mystique333/foodgram_frontend:latest
