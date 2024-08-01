@@ -177,12 +177,11 @@ class RecipeIngredientsWriteSerializer(ModelSerializer):
         min_value=MIN_VALUE,
         max_value=MAX_VALUE,
         error_messages={
-            'min_value': (
+            'min_value':
                 f'Количество ингредиентов должно быть больше {MIN_VALUE}',
-            ),
-            'max_value': (
+            'max_value':
                 f'Количество ингредиентов должно быть меньше {MAX_VALUE}',
-            )
+
         }
     )
 
@@ -257,6 +256,15 @@ class RecipeWriteSerializer(ModelSerializer):
                 raise ValidationError(
                     {'ingredients': 'Ингредиент не существует!'}
                 )
+
+            amount = item.get('amount')
+            if amount is None or amount < MIN_VALUE:
+                raise ValidationError({
+                    'amount': (
+                        'Количество ингредиентов должно быть больше '
+                        f'{MIN_VALUE}'
+                    )
+                })
 
             if ingredient in ingredients_list:
                 raise ValidationError(

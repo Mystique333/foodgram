@@ -7,6 +7,7 @@ volumes:
 
 services:
 
+  # продакшн база
   db:
     image: postgres:13
     env_file: .env
@@ -21,6 +22,7 @@ services:
   #     - pg_data:/var/lib/postgresql/data/
   #     - ./db_backup.sql:/docker-entrypoint-initdb.d/dump.sql
 
+  # продакшн бекенд
   backend:
     image: mystique333/foodgram_backend:latest
     env_file: .env
@@ -33,7 +35,7 @@ services:
   # тестовый бекенд
   # backend:
   #   build:
-  #     context: ../backend
+  #     context: backend
   #     dockerfile: Dockerfile
   #   env_file: .env
   #   volumes:
