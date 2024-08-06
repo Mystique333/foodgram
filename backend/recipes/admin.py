@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import display
 
-from .models import (FavoriteRecipe, Ingredient, Recipe, RecipeIngredients,
+from .models import (FavoriteRecipe, Ingredient, Recipe, RecipeIngredient,
                      ShoppingCart, Subscribe, Tag)
 
 
@@ -30,7 +30,7 @@ class RecipeAdmin(admin.ModelAdmin):
         return obj.favorites.count()
 
 
-@admin.register(RecipeIngredients)
+@admin.register(RecipeIngredient)
 class IngredientInRecipe(admin.ModelAdmin):
     """Админка для промежуточной модели ингредиент - рецепт."""
     list_display = ('recipe', 'ingredient', 'amount',)

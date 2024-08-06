@@ -95,7 +95,7 @@ class Recipe(models.Model):
     ingredients = models.ManyToManyField(
         Ingredient,
         blank=False,
-        through='RecipeIngredients',
+        through='RecipeIngredient',
         related_name='recipes'
     )
     tags = models.ManyToManyField(
@@ -118,7 +118,7 @@ class Recipe(models.Model):
         return f"{self.name} by {author_name}"
 
 
-class RecipeIngredients(models.Model):
+class RecipeIngredient(models.Model):
     """Промежуточная модель рецепт - ингредиент."""
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
@@ -150,6 +150,11 @@ class RecipeIngredients(models.Model):
         ordering = ['-id']
         verbose_name = 'Количество ингредиента в рецепте'
         verbose_name_plural = 'Количество ингредиентов в рецепте'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['recipe', 'ingredient'],
+                name='unique_recipe_ingredient')
+        ]
 
     def __str__(self):
         return f'{self.ingredient} в {self.recipe}'
@@ -173,9 +178,13 @@ class Subscribe(models.Model):
 
     class Meta:
         ordering = ['-id']
-        unique_together = ('user', 'author')
         verbose_name = 'Подписка'
         verbose_name_plural = 'Подписки'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'author'],
+                name='unique_user_author')
+        ]
 
     def __str__(self):
         return f'Пользователь {self.user} -> автор {self.author}'
@@ -231,9 +240,13 @@ class FavoriteRecipe(models.Model):
 
     class Meta:
         ordering = ['-id']
-        unique_together = ('user', 'recipe')
         verbose_name = "Избранный рецепт"
         verbose_name_plural = "Избранные рецепты"
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'recipe'],
+                name='unique_user_recipe')
+        ]
 
     def __str__(self):
         return f'Избранный {self.recipe} у {self.user}'

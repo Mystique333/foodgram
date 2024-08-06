@@ -10,7 +10,7 @@ SECRET_KEY = SECRET_KEY = os.getenv('SECRET_KEY', 'empty')
 
 DEBUG = str(os.getenv('DEBUG', True)).lower() == 'true'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
 INSTALLED_APPS = [
@@ -104,7 +104,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 
