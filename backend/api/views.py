@@ -78,7 +78,7 @@ class UsersViewSet(ModelViewSet):
     def set_password(self, request):
         serializer = SetPasswordSerializer(data=request.data,
                                            context={'request': request})
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -143,18 +143,17 @@ class UsersViewSet(ModelViewSet):
             return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
 
-        else:
-            subscription = Subscribe.objects.filter(
-                user=user, author=author).first()
+        subscription = Subscribe.objects.filter(
+            user=user, author=author).first()
 
-            if subscription:
-                subscription.delete()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+        if subscription:
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
 
-            return Response(
-                {'detail': 'Вы не подписаны на этого пользователя.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        return Response(
+            {'detail': 'Вы не подписаны на этого пользователя.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(
         detail=False,

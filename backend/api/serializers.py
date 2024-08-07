@@ -351,7 +351,7 @@ class RecipeWriteSerializer(ModelSerializer):
         RecipeIngredient.objects.bulk_create(instances)
 
     def create(self, validated_data):
-        ingredients_data = validated_data.pop('ingredient_list', None)
+        ingredients_data = validated_data.pop('ingredient_list')
         tags_data = validated_data.pop('tags', [])
         user = self.context['request'].user
         recipe = Recipe.objects.create(author=user, **validated_data)
@@ -360,15 +360,13 @@ class RecipeWriteSerializer(ModelSerializer):
         return recipe
 
     def update(self, instance, validated_data):
-        ingredients_data = validated_data.pop('ingredient_list', None)
-        tags_data = validated_data.pop('tags', None)
+        ingredients_data = validated_data.pop('ingredient_list')
+        tags_data = validated_data.pop('tags')
 
         instance = super().update(instance, validated_data)
         instance.tags.set(tags_data)
         instance.ingredient_list.set([])
         self.create_ingredients(ingredients_data, instance)
-
-        instance.save()
         return instance
 
     def to_representation(self, instance):
