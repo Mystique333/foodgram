@@ -78,10 +78,9 @@ class UsersViewSet(ModelViewSet):
     def set_password(self, request):
         serializer = SetPasswordSerializer(data=request.data,
                                            context={'request': request})
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=False,
             methods=['get'],
