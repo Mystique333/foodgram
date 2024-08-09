@@ -259,16 +259,16 @@ class RecipeViewSet(ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        )
+        ).annotate(total_amount=Sum('amount'))
 
     def aggregate_ingredient_amount(self, ingredients):
-        return ingredients.annotate(quantity=Sum('amount'))
+        return ingredients
 
     def format_ingredient_line(self, ingredient):
         return (
             f'- {ingredient["ingredient__name"]}'
             f' ({ingredient["ingredient__measurement_unit"]})'
-            f' - {ingredient["quantity"]}'
+            f' - {ingredient["total_amount"]}'
         )
 
     @action(
