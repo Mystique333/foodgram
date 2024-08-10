@@ -256,15 +256,12 @@ class RecipeViewSet(ModelViewSet):
     def get_user_shopping_cart_ingredients(self, user):
         return RecipeIngredient.objects.filter(
             recipe__shopping_cart__user=user
-        ).values(
-            'ingredient__name',
-            'ingredient__measurement_unit'
         )
 
     def aggregate_ingredient_amount(self, ingredients):
         return ingredients.values(
-            'ingredient__name', 'ingredient__measurement_unit'
-        ).annotate(total_amount=Sum('amount'))
+            'ingredient__name', 'ingredient__measurement_unit',
+        ).annotate(total_amount=Sum('amount')).order_by('ingredient__name')
 
     def format_ingredient_line(self, ingredient):
         return (
